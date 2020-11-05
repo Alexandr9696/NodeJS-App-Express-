@@ -1,5 +1,6 @@
 const {Router} = require('express')
 const Course = require('../models/course')
+const auth = require('./../middleware/auth')
 const router = Router()
 
 
@@ -19,7 +20,7 @@ router.get('/', async (req, res) => {
 })
 
 // редактировать курс
-router.get('/:id/edit', async (req, res) => {
+router.get('/:id/edit', auth,  async (req, res) => {
   if (!req.query.allow) {
     return res.redirect('/')
   }
@@ -33,7 +34,7 @@ router.get('/:id/edit', async (req, res) => {
 })
 
 // обновление (редактирование) курса
-router.post('/edit', async (req, res) => {
+router.post('/edit', auth, async (req, res) => {
   const {id} = req.body
   delete req.body.id
   // поиск и обновление 
@@ -42,7 +43,7 @@ router.post('/edit', async (req, res) => {
 })
 
 // удалить курс
-router.post('/remove', async (req, res) => {
+router.post('/remove', auth, async (req, res) => {
   try {
     await Course.deleteOne({
       _id: req.body.id
