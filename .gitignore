@@ -5,14 +5,6 @@
 /.pnp
 .pnp.js
 
-# Editor directories and files
-.idea
-.vscode
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-
 # testing
 /coverage
 
@@ -20,6 +12,8 @@
 /build
 /dist
 
+
+/keys/index.js
 # misc
 .DS_Store
 .env.local

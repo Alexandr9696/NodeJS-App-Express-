@@ -21,24 +21,24 @@ const authRoutes = require('./routes/auth')
 // подключение пользовательских middleware
 const varMiddleware = require('./middleware/variables')
 const userMiddleware = require('./middleware/user')
+// подключение констант
+const keys = require('./keys')
 
 
-
-const MONGODB_URI = `mongodb+srv://alexandr:JY5YZxo0AkHqPFOj@cluster0.nlkzc.mongodb.net/shop`
 const app = express()
 
 // конфигурация handlebars
 const hbs = exphbs.create({
   defaultLayout: 'main',
   extname: 'hbs',
-  handlebars: allowInsecurePrototypeAccess(Handlebars)
+  handlebars: allowInsecurePrototypeAccess(Handlebars),
+  helpers: require('./utils/hbs-helpers')
 })
 
 const store = new MongoStore({
   collection: 'sessions',
-  uri: MONGODB_URI
+  uri: keys.MONGODB_URI
 })
-
 
 // регистрирация движка handlebars
 app.engine('hbs', hbs.engine)
@@ -52,7 +52,7 @@ app.use(express.static(path.join(__dirname, 'public')))
 app.use(express.urlencoded({extended: true}))
 // подключение сессии
 app.use(session({
-  secret: 'some secret value',
+  secret: keys.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   store
@@ -78,7 +78,7 @@ const PORT = process.env.PORT || 3000
 async function start() {
   try {
     // подключение к базе данных MongoDB через mongoose
-    await mongoose.connect(MONGODB_URI, {
+    await mongoose.connect(keys.MONGODB_URI, {
       useNewUrlParser: true,
       useFindAndModify: false,
       useUnifiedTopology: true
