@@ -7,6 +7,7 @@ const exphbs = require('express-handlebars')
 const homeRoutes = require('./routes/home')
 const cardRoutes = require('./routes/cart')
 const addRoutes = require('./routes/add')
+const ordersRoutes = require('./routes/orders')
 const coursesRoutes = require('./routes/courses')
 const User = require('./models/user')
 
@@ -19,7 +20,7 @@ const hbs = exphbs.create({
   handlebars: allowInsecurePrototypeAccess(Handlebars)
 })
 
-// регистрируем движок handlebars
+// регистрирация движка handlebars
 app.engine('hbs', hbs.engine)
 // использование handlebars
 app.set('view engine', 'hbs')
@@ -36,25 +37,30 @@ app.use(async (req, res, next) => {
   }
 })
 
+// статические файлы
 app.use(express.static(path.join(__dirname, 'public')))
+// urlencoded - это метод, встроенный в express для распознавания входящего объекта запроса в виде строк или массивов
 app.use(express.urlencoded({extended: true}))
+// маршрутизация
 app.use('/', homeRoutes)
 app.use('/add', addRoutes)
 app.use('/courses', coursesRoutes)
 app.use('/cart', cardRoutes)
+app.use('/orders', ordersRoutes)
 
 
 const PORT = process.env.PORT || 3000
 
 async function start() {
   try {
+    // подключение к базе данных MongoDB через mongoose
     const url = `mongodb+srv://alexandr:JY5YZxo0AkHqPFOj@cluster0.nlkzc.mongodb.net/shop`
     await mongoose.connect(url, {
       useNewUrlParser: true,
       useFindAndModify: false,
       useUnifiedTopology: true
     })
-    // проверка если ли пользователи
+    // проверка есть ли пользователи
     const candidate = await User.findOne()
     if (!candidate) {
       const user = new User({
@@ -62,6 +68,7 @@ async function start() {
         name: 'Alexandr',
         cart: {items: []}
       })
+      // обновление объекта модели User
       await user.save()
     }
 

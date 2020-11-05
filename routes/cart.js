@@ -17,12 +17,15 @@ function computePrice(courses) {
   }, 0)
 }
 
+// добавление курса в корзину
 router.post('/add', async (req, res) => {
   const course = await Course.findById(req.body.id)
   await req.user.addToCart(course)
+
   res.redirect('/cart')
 })
 
+// удаление курса из корзины
 router.delete('/remove:id', async (req, res) => {
   await req.user.removeFromCart(req.params.id)
 
@@ -36,11 +39,12 @@ router.delete('/remove:id', async (req, res) => {
 })
 
 
-
 router.get('/', async (req, res) => {
   const user = await req.user
     .populate('cart.items.courseId')
     .execPopulate()
+
+  console.log(user)
 
   const courses = mapCartItems(user.cart)
 
@@ -51,6 +55,5 @@ router.get('/', async (req, res) => {
     price: computePrice(courses)
   })
 })
-
 
 module.exports = router

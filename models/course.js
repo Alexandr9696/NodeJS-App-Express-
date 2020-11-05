@@ -1,6 +1,6 @@
 const {Schema, model} = require('mongoose')
 
-
+// создание модели
 const courseSchema = new Schema({
   title: {
     type: String,
@@ -26,5 +26,5 @@ courseSchema.method('toClient', function () {
   return course
 })
 
-
+// регистрация модели Course c схемой courseSchema
 module.exports = model('Course', courseSchema)

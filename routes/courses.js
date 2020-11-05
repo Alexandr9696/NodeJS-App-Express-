@@ -2,11 +2,13 @@ const {Router} = require('express')
 const Course = require('../models/course')
 const router = Router()
 
+
 router.get('/', async (req, res) => {
+  // все курсы в базе данных
   const courses = await Course.find()
-    // использование референции к модели User, второй параметр - необзодимые поля
+    // использование референции к модели User, второй параметр - необходимые поля
     .populate('userId', 'email name')
-    // поля которые необходимо достать (по умолчанию все)
+    // поля которые необходимо достать (по умолчанию все) из модели Course
     .select('price title img')
 
   res.render('courses', {
@@ -16,15 +18,13 @@ router.get('/', async (req, res) => {
   })
 })
 
+// редактировать курс
 router.get('/:id/edit', async (req, res) => {
   if (!req.query.allow) {
     return res.redirect('/')
   }
-
-
+  // поиск конректного курса по id
   const course = await Course.findById(req.params.id)
-
-
 
   res.render('course-edit', {
     title: `Редактировать ${course.title}`,
@@ -32,11 +32,16 @@ router.get('/:id/edit', async (req, res) => {
   })
 })
 
+// обновление (редактирование) курса
 router.post('/edit', async (req, res) => {
-  await Course.findByIdAndUpdate(req.body.id, req.body)
+  const {id} = req.body
+  delete req.body.id
+  // поиск и обновление 
+  await Course.findByIdAndUpdate(id, req.body)
   res.redirect('/courses')
 })
 
+// удалить курс
 router.post('/remove', async (req, res) => {
   try {
     await Course.deleteOne({
@@ -46,9 +51,9 @@ router.post('/remove', async (req, res) => {
   } catch (e) {
     console.log(e)
   }
-
 })
 
+// открыть курс
 router.get('/:id', async (req, res) => {
   const course = await Course.findById(req.params.id)
   res.render('course', {

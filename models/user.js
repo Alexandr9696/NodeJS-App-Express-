@@ -28,7 +28,7 @@ const userSchema = new Schema({
   }
 })
 
-// метод добавления курса в корзину
+// добавление в корзину
 userSchema.methods.addToCart = function(course) {
   const clonedItems = [...this.cart.items]
   const idx = clonedItems.findIndex(c => {
@@ -49,6 +49,7 @@ userSchema.methods.addToCart = function(course) {
   return this.save()
 }
 
+// удаление из корзины
 userSchema.methods.removeFromCart = function(id) {
   let clonedItems = [...this.cart.items]
   const idx = clonedItems.findIndex(c => {
@@ -65,6 +66,13 @@ userSchema.methods.removeFromCart = function(id) {
 
   return this.save()
 }
+
+// очистка корзины
+userSchema.methods.clearCart = function() {
+  this.cart = {items: []}
+  return this.save()
+}
+
 
 // регистрация модели User c схемой UserSchema
 module.exports = model('User', userSchema)
