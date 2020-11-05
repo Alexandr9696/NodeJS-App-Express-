@@ -17,7 +17,7 @@ const toDate = date => {
 }
 
 document.querySelectorAll('.price').forEach(node => {
-    node.textContent = toCurrency(node.textContent)
+  node.textContent = toCurrency(node.textContent)
 })
 
 document.querySelectorAll('.date').forEach(node => {
@@ -27,17 +27,22 @@ document.querySelectorAll('.date').forEach(node => {
 const $cart = document.querySelector('#cart')
 
 if ($cart) {
-    $cart.addEventListener('click', event => {
-        if (event.target.classList.contains('js-remove')) {
-            const id = event.target.dataset.id
+  $cart.addEventListener('click', event => {
+    if (event.target.classList.contains('js-remove')) {
+      const id = event.target.dataset.id
+      const csrf = event.target.dataset.csrf
 
-            fetch('/cart/remove' + id, {
-                method: 'delete'
-            }).then(res => res.json())
-                .then(cart => {
-                        if (cart.courses.length) {
-                            const html = cart.courses.map(c => {
-                                return `
+
+      fetch('/cart/remove' + id, {
+        method: 'delete',
+        headers: {
+          'X-XSRF-TOKEN': csrf
+        }
+      }).then(res => res.json())
+        .then(cart => {
+            if (cart.courses.length) {
+              const html = cart.courses.map(c => {
+                return `
                                 <tr>
                                   <td>${c.title}</td>
                                   <td>${c.count}</td>
@@ -46,16 +51,16 @@ if ($cart) {
                                   </td>
                                 </tr>
                                 `
-                            }).join('')
-                          $cart.querySelector('tbody').innerHTML = html
-                          $cart.querySelector('.price').textContent = toCurrency(cart.price)
-                        } else {
-                            $cart.innerHTML = '<p>Корзина пуста</p>'
-                        }
-                    }
-                )
-        }
-    })
+              }).join('')
+              $cart.querySelector('tbody').innerHTML = html
+              $cart.querySelector('.price').textContent = toCurrency(cart.price)
+            } else {
+              $cart.innerHTML = '<p>Корзина пуста</p>'
+            }
+          }
+        )
+    }
+  })
 }
 
 M.Tabs.init(document.querySelectorAll('.tabs'));

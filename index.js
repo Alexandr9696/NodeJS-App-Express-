@@ -1,6 +1,8 @@
 // подключение библиотек
 const express = require('express')
 const path = require('path')
+const csrf = require('csurf')
+const flash = require('connect-flash')
 const mongoose = require('mongoose')
 // подключение handlebars
 const Handlebars = require('handlebars')
@@ -55,6 +57,10 @@ app.use(session({
   saveUninitialized: false,
   store
 }))
+// подключение csrf-защиты
+app.use(csrf())
+//
+app.use(flash())
 // подключение пользовательских middleware
 app.use(varMiddleware)
 app.use(userMiddleware)
