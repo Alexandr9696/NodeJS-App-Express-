@@ -18,9 +18,12 @@ const addRoutes = require('./routes/add')
 const ordersRoutes = require('./routes/orders')
 const coursesRoutes = require('./routes/courses')
 const authRoutes = require('./routes/auth')
+const profileRoutes = require('./routes/profile')
 // подключение пользовательских middleware
 const varMiddleware = require('./middleware/variables')
 const userMiddleware = require('./middleware/user')
+const errorHandler = require('./middleware/error')
+const fileMiddleware = require('./middleware/file')
 // подключение констант
 const keys = require('./keys')
 
@@ -48,6 +51,7 @@ app.set('views', 'views')
 
 // статические файлы
 app.use(express.static(path.join(__dirname, 'public')))
+app.use(express.static(__dirname))
 // urlencoded - это метод, встроенный в express для распознавания входящего объекта запроса в виде строк или массивов
 app.use(express.urlencoded({extended: true}))
 // подключение сессии
@@ -57,6 +61,9 @@ app.use(session({
   saveUninitialized: false,
   store
 }))
+
+app.use(fileMiddleware.single('avatar'))
+
 // подключение csrf-защиты
 app.use(csrf())
 //
@@ -71,7 +78,9 @@ app.use('/courses', coursesRoutes)
 app.use('/cart', cardRoutes)
 app.use('/orders', ordersRoutes)
 app.use('/auth', authRoutes)
+app.use('/profile', profileRoutes)
 
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 3000
 
