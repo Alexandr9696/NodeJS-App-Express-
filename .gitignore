@@ -13,7 +13,7 @@
 /dist
 
 
-/keys/index.js
+/keys/keys.dev.js
 # misc
 .DS_Store
 .env.local
